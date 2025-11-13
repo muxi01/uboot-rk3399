@@ -92,15 +92,16 @@ static void get_gpio_by_name(const char *name,int *back,int *pin)
 
 int rockchip_is_key_pressed(const char *gpio_name)
 {
-	int gpio_back,gpio_pin;
+	int gpio_bank,gpio_pin;
 	int delay=0;
 	int press_cnt=0,release_cnt=0;
-	get_gpio_by_name(gpio_name,&gpio_back,&gpio_pin);
-	gpio_rockchip_set_mux(gpio_back,gpio_pin,0);
-	gpio_rockchip_set_intput(gpio_back,gpio_pin);
+	get_gpio_by_name(gpio_name,&gpio_bank,&gpio_pin);
+	gpio_rockchip_set_mux(gpio_bank,gpio_pin,0);
+	gpio_rockchip_set_intput(gpio_bank,gpio_pin);
+	gpio_rockchip_set_pull(gpio_bank,gpio_pin,3);
 	for(delay=0;delay<SAMPLE_TIME;delay+=SAMPLE_INTERVAL) {
 		__udelay(1000 * SAMPLE_INTERVAL);
-		if(0 == gpio_rockchip_get_value(gpio_back,gpio_pin)) {
+		if(0 == gpio_rockchip_get_value(gpio_bank,gpio_pin)) {
 			press_cnt++;
 		}
 		else {

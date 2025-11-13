@@ -26,7 +26,7 @@ struct gpio_describe {
 
 struct gpio_info {
 	char name[16];
-	int  back;
+	int  bank;
 	int  pin;
 };
 
@@ -106,10 +106,10 @@ static struct gpio_describe gpio_table[GROUP_SIZE]={
 
 
 static struct gpio_info gpios[GROUP_SIZE*8];
-static void get_gpio_by_name(const char *name,int *back,int *pin)
+static void get_gpio_by_name(const char *name,int *bank,int *pin)
 {
 	//GPIO0_A1
-	*back =name[4]-'0';
+	*bank =name[4]-'0';
 	*pin =(name[6]- 'A') * 8 + (name[7] - '0');
 }
 
@@ -127,10 +127,10 @@ static int create_gpio_map(void)
 			}
 			pgpio=&gpios[gpio_cnt++];
 			sprintf(pgpio->name,"%s_%s%d",pdescribe->pGroup,pdescribe->pPart,(pdescribe->pins[k] - PIN_MIN));
-			get_gpio_by_name(pgpio->name, &(pgpio->back), &(pgpio->pin));
+			get_gpio_by_name(pgpio->name, &(pgpio->bank), &(pgpio->pin));
 			printf("%s.%d: %s\n",__FUNCTION__,__LINE__,pgpio->name);
-			gpio_rockchip_set_mux(pgpio->back,pgpio->pin, 0);
-			gpio_rockchip_set_output(pgpio->back,pgpio->pin, 1);
+			gpio_rockchip_set_mux(pgpio->bank,pgpio->pin, 0);
+			gpio_rockchip_set_output(pgpio->bank,pgpio->pin, 1);
 		}
 	}
 	return gpio_cnt;
@@ -147,19 +147,19 @@ void inline simulate_uart_delay(int percent)
 	__udelay(tick);
 }
 
-static void simulate_uart_send(char *str,int back,int pin)
+static void simulate_uart_send(char *str,int bank,int pin)
 {
 	char data;
 	while(*str){
 		data =*str++;
-		gpio_rockchip_set_value(back,pin, 0);
+		gpio_rockchip_set_value(bank,pin, 0);
 		simulate_uart_delay(10);
 		for(int i=0;i<8;i++){
-			gpio_rockchip_set_value(back,pin,data & 0x01);
+			gpio_rockchip_set_value(bank,pin,data & 0x01);
 			simulate_uart_delay(10);
 			data >>=1;
 		}
-		gpio_rockchip_set_value(back,pin, 1);
+		gpio_rockchip_set_value(bank,pin, 1);
 		simulate_uart_delay(10);
 	}
 }
@@ -182,7 +182,7 @@ static int do_pin_detect(struct cmd_tbl *cmdtp, int flag, int argc,
 		for(int i=0;i<gpio_cnt;i++){
 			if(gpios[i].name[0] == 'G'){
 				sprintf(io_name,"%s \n",gpios[i].name);
-				simulate_uart_send(io_name,gpios[i].back,gpios[i].pin);
+				simulate_uart_send(io_name,gpios[i].bank,gpios[i].pin);
 			}
 		}
 	}
