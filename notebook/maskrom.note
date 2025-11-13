@@ -1,0 +1,10 @@
+init_sequence_r [common/board_r.c]
+    board_late_init [arch/arm/mach-rockchip/board.c]
+        setup_download_mode [arch/arm/mach-rockchip/boot_rkimg.c]
+            rockchip_dnl_key_pressed() [arch/arm/mach-rockchip/boot_rkimg.c] 
+            -->CONFIG_DM_KEY : UCLASS_KEY 
+                  key_read[drivers/input/key-uclass.c  ]    
+            -->CONFIG_ADC :解析设备树,直接读取ADC通道值 [arch/arm/mach-rockchip/boot_rkimg.c]
+                adc_channel_single_shot [drivers/adc/adc-uclass.c]
+                #define KEY_DOWN_MIN_VAL	0
+                #define KEY_DOWN_MAX_VAL	30

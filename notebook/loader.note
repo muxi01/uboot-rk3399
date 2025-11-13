@@ -1,0 +1,10 @@
+
+./scripts/fit.sh  --ini-trust ../rkbin/RKTRUST/RK3568TRUST.ini --ini-loader ../rkbin/RKBOOT/RK3568MINIALL_firefly105560.ini --chip RK3568
+
+
+./make.sh loader ../rkbin/RKBOOT/RK3568MINIALL_firefly105560.ini
+
+scripts/loader.sh --ini ../rkbin/RKBOOT/RK3568MINIALL_firefly105560.ini
+
+
+./tools/boot_merger ${INI}

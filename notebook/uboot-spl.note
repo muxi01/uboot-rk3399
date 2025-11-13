@@ -1,0 +1,9 @@
+
+init_sequence_f  [SPL中初始化]
+    ......
+    jump_to_copy  [把uboot搬移到DDR中运行]
+
+
+init_sequence_r  [u-boot中初始化]
+    run_main_loop [执行各种cmd命令]
+

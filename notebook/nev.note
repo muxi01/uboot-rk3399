@@ -1,0 +1,19 @@
+	"loglevel=8 		\0" \
+	"autostart=y        \0" \
+	"init=/sbin/init    \0" \
+	"imgaddr=0x40008000 \0" \
+	"fdtaddr=0x41000000 \0" \
+	"ubifs=ubi0:rootfs ubi.mtd=6 rootfstype=ubifs  \0" \
+	"squashfs=/dev/mtdblock6  rootfstype=squashfs \0" \
+	"console=ttyS0,115200 earyprintk\0" \
+	"boot_command_a=nboot kernel_a; \0" \
+	"boot_command_b=bootm 0x40008000; \0" \
+	"boot_command_load_run_system=fastboot usb 0; bootm 0x40008000; \0" \
+	"boot_command_update_rootfs=nandc erase.all 0 0; fastboot usb 0; efex; \0" \
+	"setargs=setenv bootargs console=${console} loglevel=${loglevel} root=${squashfs} rootwait init=${init} mtdparts=${mtdparts}\0" \
+	"bootcmd=run setargs boot_command_load_run_system \0" \
+
+
+	config_distro_bootcmd.h
+
+	

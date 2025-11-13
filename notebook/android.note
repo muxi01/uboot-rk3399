@@ -1,0 +1,13 @@
+串口：115200
+su 
+mount -o rw,remount / 
+cd /data/local/tmp 
+wget 下载apk
+pm install 安装apk
+am start com.dangbei.tvlauncher 启动当贝桌面
+pm list packages
+pm uninstall -k --user 0  com.zte.usmartlauncher
+
+
+
+
