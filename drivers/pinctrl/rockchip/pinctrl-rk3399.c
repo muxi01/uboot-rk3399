@@ -312,3 +312,14 @@ U_BOOT_DRIVER(pinctrl_rk3399) = {
 #endif
 	.probe		= rockchip_pinctrl_probe,
 };
+
+
+int gpio_rockchip_set_mux(int bank, int pin, int mux)
+{
+	if(bank < 5){
+		return rk3399_set_mux(&rk3399_pin_banks[bank],pin,mux);
+	}
+	return -1;
+}
+
+EXPORT_SYMBOL(gpio_rockchip_set_mux);

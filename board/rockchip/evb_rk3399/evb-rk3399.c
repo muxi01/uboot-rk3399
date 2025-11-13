@@ -74,6 +74,45 @@ out:
 	return 0;
 }
 
+
+// int gpio_rockchip_set_mux(int bank, int pin, int mux);
+// int gpio_rockchip_set_output(int bank, int pin, int mux);
+// int gpio_rockchip_set_value(int bank, int pin, int mux);
+// int gpio_rockchip_get_value(int bank, int pin);
+// int gpio_rockchip_set_intput(int bank, int pin);
+
+#define SAMPLE_TIME 		300
+#define SAMPLE_INTERVAL		10
+static void get_gpio_by_name(const char *name,int *back,int *pin)
+{
+	//GPIO0_A1
+	*back =name[4]-'0';
+	*pin =(name[6]- 'A') * 8 + (name[7] - '0');
+}
+
+int rockchip_is_key_pressed(const char *gpio_name)
+{
+	int gpio_back,gpio_pin;
+	int delay=0;
+	int press_cnt=0,release_cnt=0;
+	get_gpio_by_name(gpio_name,&gpio_back,&gpio_pin);
+	gpio_rockchip_set_mux(gpio_back,gpio_pin,0);
+	gpio_rockchip_set_intput(gpio_back,gpio_pin);
+	for(delay=0;delay<SAMPLE_TIME;delay+=SAMPLE_INTERVAL) {
+		__udelay(1000 * SAMPLE_INTERVAL);
+		if(0 == gpio_rockchip_get_value(gpio_back,gpio_pin)) {
+			press_cnt++;
+		}
+		else {
+			release_cnt++;
+		}
+	}
+	printf("%s: press cnt:%d release cnt:%d\n",gpio_name,press_cnt,release_cnt);
+	if((press_cnt > release_cnt)  && ((press_cnt / release_cnt) > 2)) {
+		return 1;
+	}
+	return 0;
+}
 static void setup_macaddr(void)
 {
 #if CONFIG_IS_ENABLED(CMD_NET)

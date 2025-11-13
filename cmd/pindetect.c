@@ -7,12 +7,6 @@
 #include <command.h>
 #include <part.h>
 #include <vsprintf.h>
-
-#define LIMIT_DEVNAME	30
-#define PIN_DETECT_ON	1
-
-#if PIN_DETECT_ON
-
 #include <common.h>
 #include <command.h>
 #include <dm.h>
@@ -32,9 +26,30 @@ struct gpio_describe {
 
 struct gpio_info {
 	char name[16];
-	int  part;
-	int  number;
+	int  back;
+	int  pin;
 };
+
+#define  PIN_MIN		0xa0
+#define  PIN_MAX		0xa7
+
+#define  ON_LINE_0			(PIN_MIN + 0)
+#define  ON_LINE_1			(PIN_MIN + 1)
+#define  ON_LINE_2			(PIN_MIN + 2)
+#define  ON_LINE_3			(PIN_MIN + 3)
+#define  ON_LINE_4			(PIN_MIN + 4)
+#define  ON_LINE_5			(PIN_MIN + 5)
+#define  ON_LINE_6			(PIN_MIN + 6)
+#define  ON_LINE_7			(PIN_MIN + 7)
+
+#define  OF_LINE_0			(0)
+#define  OF_LINE_1			(1)
+#define  OF_LINE_2			(2)
+#define  OF_LINE_3			(3)
+#define  OF_LINE_4			(4)
+#define  OF_LINE_5			(5)
+#define  OF_LINE_6			(6)
+#define  OF_LINE_7			(7)
 
 static int get_serial_input(uint32_t timeout)
 {
@@ -55,89 +70,73 @@ static int get_serial_input(uint32_t timeout)
 }
 
 
-#define  GROUP_SIZE		20
+#define  GROUP_SIZE		18
 
-/*skip of mmc2 gpio: 
-	GPIO1_B[4..7] GPIO1_C[0..5]  GPIO1_C7
+static struct gpio_describe gpio_table[GROUP_SIZE]={
 
-  skip of uart2 for debug:
-	GPIO1_D[5..6] GPIO0_D[0..1]
-*/
-static struct gpio_describe all_gpio[GROUP_SIZE]={
+	{.pGroup="GPIO0",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO0",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5}},
 
-	{.pGroup="GPIO0",.pPart="A",.pins={'0','1',2,3,4,5,'6','7'}},
+	{.pGroup="GPIO1",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO1",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO1",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO1",.pPart="D",.pins={ON_LINE_0}},
 
-	{.pGroup="GPIO0",.pPart="B",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO0",.pPart="C",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO0",.pPart="D",.pins={'0','1',2,3,4,5,6,7}},
+	{.pGroup="GPIO2",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO2",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4}},
+	{.pGroup="GPIO2",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO2",.pPart="D",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4}},
 
+	{.pGroup="GPIO3",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO3",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO3",.pPart="C",.pins={ON_LINE_0,ON_LINE_1}},
+	{.pGroup="GPIO3",.pPart="D",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
 
-	{.pGroup="GPIO1",.pPart="A",.pins={'0','1',2,3,4,5,6,7}},
-	{.pGroup="GPIO1",.pPart="B",.pins={0,1,2,3,'4','5','6','7'}},
-	{.pGroup="GPIO1",.pPart="C",.pins={'0','1','2','3','4','5',6,'7'}},
-	{.pGroup="GPIO1",.pPart="D",.pins={0,1,2,3,4,'5','6',7}},
-
-	{.pGroup="GPIO2",.pPart="A",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO2",.pPart="B",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO2",.pPart="C",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO2",.pPart="D",.pins={0,1,2,3,4,5,6,7}},
-
-	{.pGroup="GPIO3",.pPart="A",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO3",.pPart="B",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO3",.pPart="C",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO3",.pPart="D",.pins={0,1,2,3,4,5,6,7}},
-
-	{.pGroup="GPIO4",.pPart="A",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO4",.pPart="B",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO4",.pPart="C",.pins={0,1,2,3,4,5,6,7}},
-	{.pGroup="GPIO4",.pPart="D",.pins={0,1,2,3,4,5,6,7}},
-
+	{.pGroup="GPIO4",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO4",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5}},
+	{.pGroup="GPIO4",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO4",.pPart="D",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6}},
 };
 
+// int gpio_rockchip_set_mux(int bank, int pin, int mux);
+// int gpio_rockchip_set_output(int bank, int pin, int mux);
+// int gpio_rockchip_set_value(int bank, int pin, int mux);
+// int gpio_rockchip_get_value(int bank, int pin);
+// int gpio_rockchip_set_intput(int bank, int pin);
 
-int gpio_rk3xxx_set_mux(int bank, int pin, int mux);
-int gpio_rk3xxx_set_output(int bank, int pin, int mux);
-int gpio_rk3xxx_set_value(int bank, int pin, int mux);
-int gpio_rk3xxx_get_value(int bank, int pin);
-int gpio_rk3xxx_set_intput(int bank, int pin);
 
-
-static int  count=0;
-static int  tick =0;
 static struct gpio_info gpios[GROUP_SIZE*8];
-
-
-static void get_gpio_by_name(const char *name,int *part,int *number)
+static void get_gpio_by_name(const char *name,int *back,int *pin)
 {
 	//GPIO0_A1
-	*part =name[4]-'0';
-	*number =(name[6]- 'A') * 8 + (name[7] - '0');
+	*back =name[4]-'0';
+	*pin =(name[6]- 'A') * 8 + (name[7] - '0');
 }
 
-static void create_gpio_map(void)
+static int create_gpio_map(void)
 {
 	struct gpio_describe *pdescribe;
 	struct gpio_info *pgpio;
-
-	count=0;
+	int gpio_cnt=0;
 	memset(gpios,0,sizeof(gpios));
-	for(int i=0;i<GROUP_SIZE;i++)
-	{
-		pdescribe = &all_gpio[i];
+	for(int i=0;i<GROUP_SIZE;i++) {
+		pdescribe = &gpio_table[i];
 		for(int k=0;k<8;k++){
-			if((pdescribe->pins[k] < 0) || (pdescribe->pins[k] > 7)){
+			if((pdescribe->pins[k] < PIN_MIN) || (pdescribe->pins[k] > PIN_MAX)){
 				continue;
 			}
-			pgpio=&gpios[count++];
-			sprintf(pgpio->name,"%s_%s%d",pdescribe->pGroup,pdescribe->pPart,pdescribe->pins[k]);
-			get_gpio_by_name(pgpio->name, &(pgpio->part), &(pgpio->number));
+			pgpio=&gpios[gpio_cnt++];
+			sprintf(pgpio->name,"%s_%s%d",pdescribe->pGroup,pdescribe->pPart,(pdescribe->pins[k] - PIN_MIN));
+			get_gpio_by_name(pgpio->name, &(pgpio->back), &(pgpio->pin));
 			printf("%s.%d: %s\n",__FUNCTION__,__LINE__,pgpio->name);
-			gpio_rk3xxx_set_mux(pgpio->part,pgpio->number, 0);
-			gpio_rk3xxx_set_output(pgpio->part,pgpio->number, 1);
+			gpio_rockchip_set_mux(pgpio->back,pgpio->pin, 0);
+			gpio_rockchip_set_output(pgpio->back,pgpio->pin, 1);
 		}
 	}
+	return gpio_cnt;
 }
 
+static int  tick =0;
 static void simulate_set_bsp(int bsp)
 {
 	tick =(1000*1000 + (bsp / 2)) / bsp;
@@ -148,19 +147,19 @@ void inline simulate_uart_delay(int percent)
 	__udelay(tick);
 }
 
-static void simulate_uart_send(char *str,int part,int number)
+static void simulate_uart_send(char *str,int back,int pin)
 {
 	char data;
 	while(*str){
 		data =*str++;
-		gpio_rk3xxx_set_value(part,number, 0);
+		gpio_rockchip_set_value(back,pin, 0);
 		simulate_uart_delay(10);
 		for(int i=0;i<8;i++){
-			gpio_rk3xxx_set_value(part,number,data & 0x01);
+			gpio_rockchip_set_value(back,pin,data & 0x01);
 			simulate_uart_delay(10);
 			data >>=1;
 		}
-		gpio_rk3xxx_set_value(part,number, 1);	//stop
+		gpio_rockchip_set_value(back,pin, 1);
 		simulate_uart_delay(10);
 	}
 }
@@ -169,36 +168,27 @@ static int do_pin_detect(struct cmd_tbl *cmdtp, int flag, int argc,
 		     char *const argv[])
 {
 	char io_name[16];
-	int triger=0;
+	int  gpio_cnt;
 	unsigned long bps =4800;
 	
 	if(argc > 1) {
 		bps = simple_strtoul(argv[1], NULL, 0);
 	}
-	printf("show GPIO name on itself bps=%ld\n",bps);
-	create_gpio_map();
+
+	gpio_cnt =create_gpio_map();
 	simulate_set_bsp(bps);
+	printf("show GPIO name on itself with bps=%ld\n",bps);
 	while(get_serial_input(50) < 0){
-		for(int i=0;i<count;i++){
+		for(int i=0;i<gpio_cnt;i++){
 			if(gpios[i].name[0] == 'G'){
 				sprintf(io_name,"%s \n",gpios[i].name);
-				// gpio_rk3xxx_set_value(gpios[i].part,gpios[i].number,triger & 0x01);
-				simulate_uart_send(io_name,gpios[i].part,gpios[i].number);
-				// printf("%d.%s   : part %d  number %d\n",i,gpios[i].name,gpios[i].part,gpios[i].number);
+				simulate_uart_send(io_name,gpios[i].back,gpios[i].pin);
 			}
 		}
-		triger++;
 	}
 	return 0;
 }
 
-#else
-static int do_pin_detect(struct cmd_tbl_t *cmdtp, int flag, int argc,
-		     char *const argv[])
-{
-	return 0;
-}
-#endif
 
 U_BOOT_CMD(pindetect, CONFIG_SYS_MAXARGS, 1, do_pin_detect,
 	"the GPIO name is displaied on itself in UART at bsp 4800 [defalut] ",

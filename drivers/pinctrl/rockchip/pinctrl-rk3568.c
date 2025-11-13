@@ -363,7 +363,7 @@ U_BOOT_DRIVER(pinctrl_rk3568) = {
 };
 
 
-int gpio_rk3xxx_set_mux(int bank, int pin, int mux)
+int gpio_rockchip_set_mux(int bank, int pin, int mux)
 {
 	if(bank < 5){
 		return rk3568_set_mux(&rk3568_pin_banks[bank],pin,mux);

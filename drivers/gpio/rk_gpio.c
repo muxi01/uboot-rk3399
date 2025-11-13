@@ -107,7 +107,7 @@ static unsigned long gpio_base[]={0x2000a000,0x2003c000,0x2003e000,0x20080000};
 static unsigned long gpio_base[]={0x2000a000,0x2003c000,0x2003e000,0x20080000};
 #endif 
 
-int gpio_rk3xxx_set_output(int bank, int pin, int value)
+int gpio_rockchip_set_output(int bank, int pin, int value)
 {
 	if(bank < (sizeof(gpio_base) / sizeof(unsigned long))){
 		struct rockchip_gpio_regs *regs = (struct rockchip_gpio_regs *)gpio_base[bank];
@@ -118,8 +118,9 @@ int gpio_rk3xxx_set_output(int bank, int pin, int value)
 	}
 	return -1;
 }
+EXPORT_SYMBOL(gpio_rockchip_set_output);
 
-int gpio_rk3xxx_set_intput(int bank, int pin)
+int gpio_rockchip_set_intput(int bank, int pin)
 {
 	if(bank < (sizeof(gpio_base) / sizeof(unsigned long))){
 		struct rockchip_gpio_regs *regs = (struct rockchip_gpio_regs *)gpio_base[bank];
@@ -129,8 +130,10 @@ int gpio_rk3xxx_set_intput(int bank, int pin)
 	}
 	return -1;
 }
+EXPORT_SYMBOL(gpio_rockchip_set_intput);
 
-int gpio_rk3xxx_set_value(int bank, int pin, int value)
+
+int gpio_rockchip_set_value(int bank, int pin, int value)
 {
 	if(bank < (sizeof(gpio_base) / sizeof(unsigned long))) {
 		struct rockchip_gpio_regs *regs = (struct rockchip_gpio_regs *)gpio_base[bank];
@@ -139,8 +142,10 @@ int gpio_rk3xxx_set_value(int bank, int pin, int value)
 	}
 	return -1;
 }
+EXPORT_SYMBOL(gpio_rockchip_set_value);
 
-int gpio_rk3xxx_get_value(int bank, int pin)
+
+int gpio_rockchip_get_value(int bank, int pin)
 {
 	if(bank < (sizeof(gpio_base) / sizeof(unsigned long))) {
 		struct rockchip_gpio_regs *regs = (struct rockchip_gpio_regs *)gpio_base[bank];
@@ -148,6 +153,8 @@ int gpio_rk3xxx_get_value(int bank, int pin)
 	}
 	return -1;
 }
+EXPORT_SYMBOL(gpio_rockchip_get_value);
+
 
 static int rockchip_gpio_get_function(struct udevice *dev, unsigned offset)
 {
