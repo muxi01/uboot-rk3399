@@ -150,18 +150,9 @@ x509.genkey
 
 # Clang's compilation database file
 /compile_commands.json
-
-u-boot.cfg
-u-boot.cfg.configs
-u-boot.lds
-u-boot.map
-u-boot.srec
-u-boot.sym
 uboot.img
 
 
 u-boot-spl*
-u-boot.itb
-u-boot.its
 tpl/u-boot-tpl*
 
