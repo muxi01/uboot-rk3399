@@ -48,7 +48,6 @@ static int gpio_to_device(unsigned int gpio, struct gpio_desc *desc)
 			return 0;
 		}
 	}
-
 	/* No such GPIO */
 	return ret ? ret : -ENOENT;
 }
@@ -324,11 +323,12 @@ int gpio_request(unsigned gpio, const char *label)
 {
 	struct gpio_desc desc;
 	int ret;
-
+	printf("%s.%d\n",__FUNCTION__,__LINE__);
 	ret = gpio_to_device(gpio, &desc);
 	if (ret)
 		return ret;
 
+	printf("%s.%d\n",__FUNCTION__,__LINE__);
 	return dm_gpio_request(&desc, label);
 }
 

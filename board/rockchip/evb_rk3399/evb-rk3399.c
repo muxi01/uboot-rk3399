@@ -77,29 +77,16 @@ out:
 }
 
 
-// int gpio_rockchip_set_mux(int bank, int pin, int mux);
-// int gpio_rockchip_set_output(int bank, int pin, int mux);
-// int gpio_rockchip_set_value(int bank, int pin, int mux);
-// int gpio_rockchip_get_value(int bank, int pin);
-// int gpio_rockchip_set_intput(int bank, int pin);
-
 #define SAMPLE_TIME 		300
 #define SAMPLE_INTERVAL		10
 
-#if 0
-static void get_gpio_by_name(const char *name,int *back,int *pin)
-{
-	//GPIO0_A1
-	*back =name[4]-'0';
-	*pin =(name[6]- 'A') * 8 + (name[7] - '0');
-}
-
+#if 1
 int rockchip_is_key_pressed(const char *gpio_name)
 {
 	int gpio_bank,gpio_pin;
 	int delay=0;
 	int press_cnt=0,release_cnt=0;
-	get_gpio_by_name(gpio_name,&gpio_bank,&gpio_pin);
+	gpio_rockchip_get_gpio(gpio_name,&gpio_bank,&gpio_pin);
 	gpio_rockchip_set_mux(gpio_bank,gpio_pin,0);
 	gpio_rockchip_set_intput(gpio_bank,gpio_pin);
 	gpio_rockchip_set_pull(gpio_bank,gpio_pin,3);
@@ -113,7 +100,10 @@ int rockchip_is_key_pressed(const char *gpio_name)
 		}
 	}
 	printf("%s: press cnt:%d release cnt:%d\n",gpio_name,press_cnt,release_cnt);
-	if((press_cnt > release_cnt)  && ((press_cnt / release_cnt) > 2)) {
+	if(release_cnt == 0)  {
+		return 1;
+	}
+	else if((press_cnt > release_cnt)  && ((press_cnt / release_cnt) > 3)) {
 		return 1;
 	}
 	return 0;
@@ -126,7 +116,6 @@ static int get_gpio_by_name(const char *name)
 	int pin =(name[6]- 'A') * 8 + (name[7] - '0');
 	return (back * 32 + pin);
 }
-
 
 static int rockchip_is_key_pressed(const char *gpio_name)
 {
@@ -153,6 +142,8 @@ static int rockchip_is_key_pressed(const char *gpio_name)
 	return 0;
 }
 
+#endif 
+
 
 int rk_board_download(void)
 {
@@ -161,11 +152,11 @@ int rk_board_download(void)
 	//	env_set("preboot", "setenv preboot; fastboot usb 0");
 	//	run_command("fastboot usb 0", 0);
 	}
-	else if(rockchip_is_key_pressed("GPIO1_C2")) {
+	if(rockchip_is_key_pressed("GPIO1_C2")) {
 		printf("go to download mode\n");
 	//	env_set("preboot", "setenv preboot; download");
 	}
-	else if(rockchip_is_key_pressed("GPIO1_B0")){
+	if(rockchip_is_key_pressed("GPIO1_B0")){
 		printf("go to maskrom mode\n");
 	//	writel(BOOT_BROM_DOWNLOAD, CONFIG_ROCKCHIP_BOOT_MODE_REG);
 	//	do_reset(NULL, 0, 0, NULL);
@@ -174,13 +165,11 @@ int rk_board_download(void)
 	return 0;
 }
 EXPORT_SYMBOL(rk_board_download);
-#endif 
-
 
 
 int rk_board_late_init(void)
 {
-	return rk_board_download();
+	return 0;
 }
 
 

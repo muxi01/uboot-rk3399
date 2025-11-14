@@ -680,3 +680,6 @@ int rockchip_pinctrl_probe(struct udevice *dev)
 	priv->ctrl = ctrl;
 	return 0;
 }
+
+
+

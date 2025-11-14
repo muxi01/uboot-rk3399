@@ -103,9 +103,12 @@ static unsigned long gpio_base[]={0xfdd60000,0xfe740000,0xfe750000,0xfe760000,0x
 static unsigned long gpio_base[]={0xff720000,0xff730000,0xff780000,0xff788000,0xff790000};
 #elif defined(CONFIG_ROCKCHIP_RK3188)
 static unsigned long gpio_base[]={0x2000a000,0x2003c000,0x2003e000,0x20080000};
+#elif defined(CONFIG_ROCKCHIP_RK3326)
+static unsigned long gpio_base[]={0xff040000,0xff250000,0xff260000,0xff270000};
 #else 
 static unsigned long gpio_base[]={0x2000a000,0x2003c000,0x2003e000,0x20080000};
 #endif 
+
 
 int gpio_rockchip_set_output(int bank, int pin, int value)
 {
@@ -154,6 +157,18 @@ int gpio_rockchip_get_value(int bank, int pin)
 	return -1;
 }
 EXPORT_SYMBOL(gpio_rockchip_get_value);
+
+int gpio_rockchip_get_gpio(const char *name,int *bank,int *pin)
+{
+	//GPIO0_A1
+	*bank =name[4]-'0';
+	*pin =(name[6]- 'A') * 8 + (name[7] - '0');
+	if((*bank < sizeof(gpio_base) / sizeof(gpio_base[0])) && (*pin < 32))  {
+		return 0;
+	}
+	return -1;
+}
+EXPORT_SYMBOL(get_gpio_by_name);
 
 
 static int rockchip_gpio_get_function(struct udevice *dev, unsigned offset)

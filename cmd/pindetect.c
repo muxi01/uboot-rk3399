@@ -106,12 +106,6 @@ static struct gpio_describe gpio_table[GROUP_SIZE]={
 
 
 static struct gpio_info gpios[GROUP_SIZE*8];
-static void get_gpio_by_name(const char *name,int *bank,int *pin)
-{
-	//GPIO0_A1
-	*bank =name[4]-'0';
-	*pin =(name[6]- 'A') * 8 + (name[7] - '0');
-}
 
 static int create_gpio_map(void)
 {
@@ -127,7 +121,7 @@ static int create_gpio_map(void)
 			}
 			pgpio=&gpios[gpio_cnt++];
 			sprintf(pgpio->name,"%s_%s%d",pdescribe->pGroup,pdescribe->pPart,(pdescribe->pins[k] - PIN_MIN));
-			get_gpio_by_name(pgpio->name, &(pgpio->bank), &(pgpio->pin));
+			gpio_rockchip_get_gpio(pgpio->name, &(pgpio->bank), &(pgpio->pin));
 			printf("%s.%d: %s\n",__FUNCTION__,__LINE__,pgpio->name);
 			gpio_rockchip_set_mux(pgpio->bank,pgpio->pin, 0);
 			gpio_rockchip_set_output(pgpio->bank,pgpio->pin, 1);
