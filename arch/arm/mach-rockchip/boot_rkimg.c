@@ -327,8 +327,8 @@ __weak int rockchip_dnl_key_pressed(void)
 void setup_download_mode(void)
 {
 	int vbus = 1; /* Assumed 1 in case of no rockusb */
-
 	boot_devtype_init();
+	return ;
 
 #ifdef CONFIG_ROCKCHIP_RK3399
 	if(rockchip_is_key_pressed("GPIO1_C7"))

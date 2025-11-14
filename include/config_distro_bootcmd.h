@@ -323,15 +323,73 @@
 	BOOTENV_SHARED_UBIFS \
 	BOOTENV_SHARED_EFI \
 	"boot_prefixes=/ /boot/\0" \
+	"boot_scripts=boot.scr.uimg boot.scr\0" \
+	"boot_script_dhcp=boot.scr.uimg\0" \
 	"log_addr_r=0x0a200000\0"\
 	"log_size_r=0x100000\0" \
-	"rel_runing=load mmc 0:3 ${fdt_addr_r} /rel/rk3326-scanpen-app.dtb; load mmc 0:3 ${kernel_addr_r} /rel/Image; booti ${kernel_addr_r} - ${fdt_addr_r};\0" \
-	"dev_runing=load mmc 0:3 ${fdt_addr_r} /dev/rk3326-scanpen-app.dtb; load mmc 0:3 ${kernel_addr_r} /dev/Image; booti ${kernel_addr_r} - ${fdt_addr_r};\0" \
-	"fastboot_run=fastboot usb 0;\0"
-	
-	
+	"do_fastboot=fastboot usb 0;sleepms 3000; booti ${kernel_addr_r} - ${fdt_addr_r};\0" \
+	BOOTENV_BOOT_TARGETS \
+	\
+	"boot_extlinux="                                                  \
+		"sysboot ${devtype} ${devnum}:${distro_bootpart} any "    \
+			"${scriptaddr} ${prefix}extlinux/extlinux.conf\0" \
+	\
+	"scan_dev_for_extlinux="                                          \
+		"if test -e ${devtype} "                                  \
+				"${devnum}:${distro_bootpart} "           \
+				"${prefix}extlinux/extlinux.conf; then "  \
+			"echo Found ${prefix}extlinux/extlinux.conf; "    \
+			"run boot_extlinux; "                             \
+			"echo SCRIPT FAILED: continuing...; "             \
+		"fi\0"                                                    \
+	\
+	"boot_a_script="                                                  \
+		"load ${devtype} ${devnum}:${distro_bootpart} "           \
+			"${scriptaddr} ${prefix}${script}; "              \
+		"source ${scriptaddr}\0"                                  \
+	\
+	"scan_dev_for_scripts="                                           \
+		"for script in ${boot_scripts}; do "                      \
+			"if test -e ${devtype} "                          \
+					"${devnum}:${distro_bootpart} "   \
+					"${prefix}${script}; then "       \
+				"echo Found U-Boot script "               \
+					"${prefix}${script}; "            \
+				"run boot_a_script; "                     \
+				"echo SCRIPT FAILED: continuing...; "     \
+			"fi; "                                            \
+		"done\0"                                                  \
+	\
+	"scan_dev_for_boot="                                              \
+		"echo Scanning ${devtype} "                               \
+				"${devnum}:${distro_bootpart}...; "       \
+		"for prefix in ${boot_prefixes}; do "                     \
+			"run scan_dev_for_extlinux; "                     \
+			"run scan_dev_for_scripts; "                      \
+		"done;"                                                   \
+		SCAN_DEV_FOR_EFI                                          \
+		"\0"                                                      \
+	\
+	"scan_dev_for_boot_part="                                         \
+		"part list ${devtype} ${devnum} -bootable devplist; "     \
+		"env exists devplist || setenv devplist 1; "              \
+		"for distro_bootpart in ${devplist}; do "                 \
+			"if fstype ${devtype} "                           \
+					"${devnum}:${distro_bootpart} "   \
+					"bootfstype; then "               \
+				"run scan_dev_for_boot; "                 \
+			"fi; "                                            \
+		"done\0"                                                  \
+	\
+	BOOT_TARGET_DEVICES(BOOTENV_DEV)                                  \
+	\
+	"distro_bootcmd=" BOOTENV_SET_SCSI_NEED_INIT                      \
+		"for target in ${boot_targets}; do "                      \
+			"run bootcmd_${target}; "                         \
+		"done\0"
+
 #ifndef CONFIG_BOOTCOMMAND
-#define CONFIG_BOOTCOMMAND "run fastboot_run"
+#define CONFIG_BOOTCOMMAND "run do_fastboot;"
 /*---define CONFIG_BOOTCOMMAND "run distro_bootcmd"*/
 #endif
 

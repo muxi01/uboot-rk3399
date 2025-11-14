@@ -153,6 +153,9 @@ typedef struct global_data {
 	u64 pstore_addr;
 	u32 pstore_size;
 #endif
+#ifdef CONFIG_LOG_TRACE
+	logtrace_t logtrace;
+#endif
 } gd_t;
 #endif
 

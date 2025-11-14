@@ -2325,6 +2325,11 @@ static void cb_oem(struct usb_ep *ep, struct usb_request *req)
         fastboot_tx_write_str("OKAY");
     }
 
+    else if (strncmp("key", cmd + 4, 3) == 0){
+        rk_board_download();
+        fastboot_tx_write_str("OKAY");
+    }
+
     else if (strncmp("print", cmd + 4, 5) == 0){
 #ifdef CONFIG_LOG_TRACE
         if(logtrace_print(fastboot_tx_write_str) < 0) {
@@ -2346,6 +2351,7 @@ static void cb_oem(struct usb_ep *ep, struct usb_request *req)
         fastboot_tx_write_str("INFO rkusb  for entry to rbrom");
         fastboot_tx_write_str("INFO log    for buffer log of putc");
         fastboot_tx_write_str("INFO print  for print buffer");
+        fastboot_tx_write_str("INFO key    for gpio testing");
         fastboot_tx_write_str("OKAYDone!");
     }
     else {
