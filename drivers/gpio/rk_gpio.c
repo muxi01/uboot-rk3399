@@ -105,8 +105,8 @@ static unsigned long gpio_base[]={0xff720000,0xff730000,0xff780000,0xff788000,0x
 static unsigned long gpio_base[]={0x2000a000,0x2003c000,0x2003e000,0x20080000};
 #elif defined(CONFIG_ROCKCHIP_RK3326)
 static unsigned long gpio_base[]={0xff040000,0xff250000,0xff260000,0xff270000};
-#else 
-static unsigned long gpio_base[]={0x2000a000,0x2003c000,0x2003e000,0x20080000};
+#elif defined(CONFIG_ROCKCHIP_RK3528)
+static unsigned long gpio_base[]={0xff610000,0xffaf0000,0xffb00000,0xffb10000,0xffb20000};
 #endif 
 
 

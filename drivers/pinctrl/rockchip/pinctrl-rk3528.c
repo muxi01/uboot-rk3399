@@ -311,3 +311,21 @@ U_BOOT_DRIVER(pinctrl_rk3528) = {
 	.probe		= rockchip_pinctrl_probe,
 };
 
+int gpio_rockchip_set_mux(int bank, int pin, int mux)
+{
+	if(bank < ARRAY_SIZE(rk3528_pin_banks)){
+		return rk3528_set_mux(&rk3528_pin_banks[bank],pin,mux);
+	}
+	return -1;
+}
+EXPORT_SYMBOL(gpio_rockchip_set_mux);
+
+
+int gpio_rockchip_set_pull(int bank,int pin,int pull)
+{
+	if(bank < ARRAY_SIZE(rk3528_pin_banks)){
+		return rk3528_set_pull(&rk3528_pin_banks[bank],pin,pull);
+	}
+	return -1;
+}
+EXPORT_SYMBOL(gpio_rockchip_set_pull);
