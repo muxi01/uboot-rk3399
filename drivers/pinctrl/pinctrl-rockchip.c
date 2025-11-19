@@ -320,6 +320,7 @@ struct rockchip_pin_bank {
 #define MR_PMUGRF(ID, PIN, FUNC, REG, VAL)	\
 	PIN_BANK_MUX_ROUTE_FLAGS(ID, PIN, FUNC, REG, VAL, ROUTE_TYPE_PMUGRF)
 
+#define DEBUG_PRINT(fmt,args...) printf(fmt,##args)
 /**
  * struct rockchip_mux_recalced_data: represent a pin iomux data.
  * @num: bank number.
@@ -3210,7 +3211,7 @@ static int rockchip_pinctrl_probe(struct udevice *dev)
 	struct udevice *syscon;
 	struct regmap *regmap;
 	int ret = 0;
-
+	DEBUG_PRINT("%s.%d \n",__func__,__LINE__);
 	/* get rockchip grf syscon phandle */
 	ret = uclass_get_device_by_phandle(UCLASS_SYSCON, dev, "rockchip,grf",
 					   &syscon);

@@ -1,0 +1,10 @@
+--- tpl/u-boot.cfg
++++ tpl/u-boot.cfg
+@@ -276,6 +276,7 @@
+ #define CONFIG_IDENT_STRING ""
+ #define CONFIG_USB_OHCI_HCD 1
+ #define CONFIG_VIDEO_BPP32 1
++#define CONFIG_ROCKCHIP_GPIO_V2 1
+ #define CONFIG_SUPPORT_OF_CONTROL 1
+ #define CONFIG_DRM_ROCKCHIP 1
+ #define CONFIG_AVB_LIBAVB 1

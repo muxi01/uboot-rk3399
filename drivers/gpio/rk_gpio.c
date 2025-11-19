@@ -163,12 +163,13 @@ int gpio_rockchip_get_gpio(const char *name,int *bank,int *pin)
 	//GPIO0_A1
 	*bank =name[4]-'0';
 	*pin =(name[6]- 'A') * 8 + (name[7] - '0');
-	if((*bank < sizeof(gpio_base) / sizeof(gpio_base[0])) && (*pin < 32))  {
+	if((*bank < (sizeof(gpio_base) / sizeof(gpio_base[0]))) && (*pin < 32))  {
 		return 0;
 	}
 	return -1;
 }
-EXPORT_SYMBOL(get_gpio_by_name);
+EXPORT_SYMBOL(gpio_rockchip_get_gpio);
+
 
 
 static int rockchip_gpio_get_function(struct udevice *dev, unsigned offset)

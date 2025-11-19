@@ -1,3 +1,11 @@
+board_init_f [common/board_f.c]
+    initf_dm [common/board_f.c]
+        dm_init_and_scan [drivers/core/root.c]
+            dm_init
+            dm_scan_platdata
+
+
+
 init_sequence_r [common/board_r.c]
     board_late_init [arch/arm/mach-rockchip/board.c]
         setup_download_mode [arch/arm/mach-rockchip/boot_rkimg.c]
@@ -8,3 +16,27 @@ init_sequence_r [common/board_r.c]
                 adc_channel_single_shot [drivers/adc/adc-uclass.c]
                 #define KEY_DOWN_MIN_VAL	0
                 #define KEY_DOWN_MAX_VAL	30
+
+
+init_sequence_r [common/board_r.c]
+	log_init:858
+
+	logtrace_init:862
+
+    initr_dm:879
+        dm_init_and_scan [common/board_r.c]
+
+    board_init:890
+        early_download
+        rk_board_init [board/rockchip/evb_rk3399/evb-rk3399.c]
+            uclass_get_device(UCLASS_PINCTRL, 0, &pinctrl); [board/rockchip/evb_rk3399/evb-rk3399.c]
+                U_BOOT_DRIVER(pinctrl_rk3399)    [drivers/pinctrl/rockchip/pinctrl-rk3399.c]
+                    rockchip_pinctrl_probe [drivers/pinctrl/rockchip/pinctrl-rockchip-core.c]
+                        rockchip_pinctrl_get_soc_data [drivers/pinctrl/rockchip/pinctrl-rk3399.c]
+                            rk3399_pinctrl_ids [drivers/pinctrl/rockchip/pinctrl-rk3399.c]
+
+    board_late_init: 1012
+
+
+
+

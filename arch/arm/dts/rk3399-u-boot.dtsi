@@ -21,6 +21,32 @@
 	status = "okay";
 };
 
+
+&pinctrl {
+	u-boot,dm-spl;
+	status = "okay";
+};
+
+&gpio0 {
+	u-boot,dm-spl;
+};
+
+&gpio1 {
+	u-boot,dm-spl;
+};
+
+&gpio2 {
+	u-boot,dm-spl;
+};
+
+&gpio3 {
+	u-boot,dm-spl;
+};
+
+&gpio4 {
+	u-boot,dm-spl;
+};
+
 &uart2 {
 	clock-frequency = <24000000>;
 	u-boot,dm-pre-reloc;

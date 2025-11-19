@@ -328,13 +328,7 @@ void setup_download_mode(void)
 {
 	int vbus = 1; /* Assumed 1 in case of no rockusb */
 	boot_devtype_init();
-	return ;
-
-#ifdef CONFIG_ROCKCHIP_RK3399
-	if(rockchip_is_key_pressed("GPIO1_C7"))
-#else 
 	if (rockchip_dnl_key_pressed() || is_hotkey(HK_ROCKUSB_DNL)) 
-#endif 
 	{
 		printf("download %skey pressed... ",
 		       is_hotkey(HK_ROCKUSB_DNL) ? "hot" : "");
@@ -353,11 +347,7 @@ void setup_download_mode(void)
 			env_set("reboot_mode", "recovery-key");
 		}
 	} 
-#ifdef CONFIG_ROCKCHIP_RK3399
-	else if(rockchip_is_key_pressed("GPIO1_C2"))
-#else 
 	else if (is_hotkey(HK_FASTBOOT)) 
-#endif 
 	{
 		printf("entering fastboot mode!\n");
 		env_set("reboot_mode", "fastboot");

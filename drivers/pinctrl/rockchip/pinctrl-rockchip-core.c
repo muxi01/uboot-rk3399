@@ -16,6 +16,8 @@
 #define MAX_ROCKCHIP_GPIO_PER_BANK      32
 #define RK_FUNC_GPIO                    0
 
+#define DEBUG_PRINT(fmt,args...) printf(fmt,##args)
+
 static int rockchip_verify_config(struct udevice *dev, u32 bank, u32 pin)
 {
 	struct rockchip_pinctrl_priv *priv = dev_get_priv(dev);
@@ -641,23 +643,22 @@ int rockchip_pinctrl_probe(struct udevice *dev)
 	struct udevice *syscon;
 	struct regmap *regmap;
 	int ret = 0;
-
+	
 	/* get rockchip grf syscon phandle */
 	ret = uclass_get_device_by_phandle(UCLASS_SYSCON, dev, "rockchip,grf",
 					   &syscon);
 	if (ret) {
-		debug("unable to find rockchip,grf syscon device (%d)\n", ret);
+		DEBUG_PRINT("unable to find rockchip,grf syscon device (%d)\n", ret);
 		return ret;
 	}
 
 	/* get grf-reg base address */
 	regmap = syscon_get_regmap(syscon);
 	if (!regmap) {
-		debug("unable to find rockchip grf regmap\n");
+		DEBUG_PRINT("unable to find rockchip grf regmap\n");
 		return -ENODEV;
 	}
 	priv->regmap_base = regmap;
-
 	/* option: get pmu-reg base address */
 	ret = uclass_get_device_by_phandle(UCLASS_SYSCON, dev, "rockchip,pmu",
 					   &syscon);

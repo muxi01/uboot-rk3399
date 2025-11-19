@@ -2326,7 +2326,6 @@ static void cb_oem(struct usb_ep *ep, struct usb_request *req)
     }
 
     else if (strncmp("key", cmd + 4, 3) == 0){
-        rk_board_download();
         fastboot_tx_write_str("OKAY");
     }
 

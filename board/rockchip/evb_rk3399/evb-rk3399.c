@@ -25,6 +25,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define RK3399_CPUID_OFF  0x7
 #define RK3399_CPUID_LEN  0x10
 
+#define DEBUG_PRINT(fmt,args...) printf(fmt,##args)
+
 int rk_board_init(void)
 {
 	struct udevice *pinctrl, *regulator;
@@ -35,40 +37,41 @@ int rk_board_init(void)
 	 * not get periph_id by pinctrl framework, so let's init them here.
 	 * The PWM2 and PWM3 are for pwm regulators.
 	 */
+
 	ret = uclass_get_device(UCLASS_PINCTRL, 0, &pinctrl);
 	if (ret) {
-		debug("%s: Cannot find pinctrl device\n", __func__);
+		DEBUG_PRINT("%s: Cannot find pinctrl device\n", __func__);
 		goto out;
 	}
 
 	/* Enable pwm0 for panel backlight */
 	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_PWM0);
 	if (ret) {
-		debug("%s PWM0 pinctrl init fail! (ret=%d)\n", __func__, ret);
+		DEBUG_PRINT("%s PWM0 pinctrl init fail! (ret=%d)\n", __func__, ret);
 		goto out;
 	}
 
 	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_PWM2);
 	if (ret) {
-		debug("%s PWM2 pinctrl init fail!\n", __func__);
+		DEBUG_PRINT("%s PWM2 pinctrl init fail!\n", __func__);
 		goto out;
 	}
 
 	ret = pinctrl_request_noflags(pinctrl, PERIPH_ID_PWM3);
 	if (ret) {
-		debug("%s PWM3 pinctrl init fail!\n", __func__);
+		DEBUG_PRINT("%s PWM3 pinctrl init fail!\n", __func__);
 		goto out;
 	}
 
 	ret = regulator_get_by_platname("vcc5v0_host", &regulator);
 	if (ret) {
-		debug("%s vcc5v0_host init fail! ret %d\n", __func__, ret);
+		DEBUG_PRINT("%s vcc5v0_host init fail! ret %d\n", __func__, ret);
 		goto out;
 	}
 
 	ret = regulator_set_enable(regulator, true);
 	if (ret) {
-		debug("%s vcc5v0-host-en set fail!\n", __func__);
+		DEBUG_PRINT("%s vcc5v0-host-en set fail!\n", __func__);
 		goto out;
 	}
 
@@ -80,6 +83,7 @@ out:
 #define SAMPLE_TIME 		300
 #define SAMPLE_INTERVAL		10
 
+#if 0
 int rockchip_is_key_pressed(const char *gpio_name)
 {
 	int gpio_bank,gpio_pin;
@@ -98,7 +102,7 @@ int rockchip_is_key_pressed(const char *gpio_name)
 			release_cnt++;
 		}
 	}
-	printf("%s: press cnt:%d release cnt:%d\n",gpio_name,press_cnt,release_cnt);
+	printf("%s: press cnt:%d| release cnt:%d|\n",gpio_name,press_cnt,release_cnt);
 	if(release_cnt == 0)  {
 		return 1;
 	}
@@ -107,6 +111,14 @@ int rockchip_is_key_pressed(const char *gpio_name)
 	}
 	return 0;
 }
+#else 
+
+int rockchip_is_key_pressed(const char *gpio_name)
+{
+	return 0;
+}
+#endif 
+
 
 int rk_board_download(void)
 {
@@ -119,7 +131,7 @@ int rk_board_download(void)
 		printf("go to download mode\n");
 	//	env_set("preboot", "setenv preboot; download");
 	}
-	if(rockchip_is_key_pressed("GPIO1_B0")){
+	if(rockchip_is_key_pressed("GPIO1_B0")) {
 		printf("go to maskrom mode\n");
 	//	writel(BOOT_BROM_DOWNLOAD, CONFIG_ROCKCHIP_BOOT_MODE_REG);
 	//	do_reset(NULL, 0, 0, NULL);
@@ -132,6 +144,7 @@ EXPORT_SYMBOL(rk_board_download);
 
 int rk_board_late_init(void)
 {
+//	rk_board_download();
 	return 0;
 }
 

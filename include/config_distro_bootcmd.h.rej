@@ -1,0 +1,12 @@
+--- include/config_distro_bootcmd.h
++++ include/config_distro_bootcmd.h
+@@ -327,7 +327,8 @@
+ 	"boot_script_dhcp=boot.scr.uimg\0" \
+ 	"log_addr_r=0x0a200000\0"\
+ 	"log_size_r=0x100000\0" \
+-	"do_fastboot=fastboot usb 0;sleepms 3000; booti ${kernel_addr_r} - ${fdt_addr_r};\0" \
++	"load_images=load mmc 0:3 ${kernel_addr_r} /rel/kernel.img ;load mmc 0:3 ${fdt_addr_r} /rel/sogou.dtb;\0" \
++	"do_fastboot=fastboot usb 0 ;booti ${kernel_addr_r} - ${fdt_addr_r}; \0" \
+ 	BOOTENV_BOOT_TARGETS \
+ 	\
+ 	"boot_extlinux="                                                  \
