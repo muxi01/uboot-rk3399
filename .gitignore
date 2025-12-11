@@ -152,7 +152,3 @@ x509.genkey
 /compile_commands.json
 uboot.img
 
-
-u-boot-spl*
-tpl/u-boot-tpl*
-
