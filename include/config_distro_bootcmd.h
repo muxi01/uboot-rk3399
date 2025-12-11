@@ -325,10 +325,6 @@
 	"boot_prefixes=/ /boot/\0" \
 	"boot_scripts=boot.scr.uimg boot.scr\0" \
 	"boot_script_dhcp=boot.scr.uimg\0" \
-	"log_addr_r=0x0a200000\0"\
-	"log_size_r=0x100000\0" \
-	"load_images=load mmc 0:3 ${kernel_addr_r} /rel/kernel.img ;load mmc 0:3 ${fdt_addr_r} /rel/sogou.dtb;\0" \
-	"do_fastboot=fastboot usb 0 ;booti ${kernel_addr_r} - ${fdt_addr_r}; \0" \
 	BOOTENV_BOOT_TARGETS \
 	\
 	"boot_extlinux="                                                  \
@@ -387,11 +383,13 @@
 	"distro_bootcmd=" BOOTENV_SET_SCSI_NEED_INIT                      \
 		"for target in ${boot_targets}; do "                      \
 			"run bootcmd_${target}; "                         \
-		"done\0"
+		"done\0" \
+	"log_addr_r=0x0a200000\0"\
+	"log_size_r=0x100000\0" \
+	"do_fastboot=run load_images ;booti ${kernel_addr_r} - ${fdt_addr_r}; \0"
 
 #ifndef CONFIG_BOOTCOMMAND
-#define CONFIG_BOOTCOMMAND "run do_fastboot;"
-/*---define CONFIG_BOOTCOMMAND "run distro_bootcmd"*/
+#define CONFIG_BOOTCOMMAND "run distro_bootcmd"
 #endif
 
 #endif  /* _CONFIG_CMD_DISTRO_BOOTCMD_H */
