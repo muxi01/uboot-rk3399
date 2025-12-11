@@ -386,10 +386,10 @@
 		"done\0" \
 	"log_addr_r=0x0a200000\0"\
 	"log_size_r=0x100000\0" \
-	"do_fastboot=run load_images ;booti ${kernel_addr_r} - ${fdt_addr_r}; \0"
+	"do_fastboot=fastboot usb 0 ;booti ${kernel_addr_r} - ${fdt_addr_r}; \0"
 
 #ifndef CONFIG_BOOTCOMMAND
-#define CONFIG_BOOTCOMMAND "run distro_bootcmd"
+#define CONFIG_BOOTCOMMAND "run distro_bootcmd; run do_fastboot;"
 #endif
 
 #endif  /* _CONFIG_CMD_DISTRO_BOOTCMD_H */
