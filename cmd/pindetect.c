@@ -71,8 +71,7 @@ static int get_serial_input(uint32_t timeout)
 
 
 
-
-#ifdef CONFIG_ROCKCHIP_RK3399
+#if defined(CONFIG_ROCKCHIP_RK3399) || defined(CONFIG_ROCKCHIP_RK3399PRO)
 #define  GROUP_SIZE		18
 static struct gpio_describe gpio_table[GROUP_SIZE]={
 
@@ -96,30 +95,8 @@ static struct gpio_describe gpio_table[GROUP_SIZE]={
 
 	{.pGroup="GPIO4",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
 	{.pGroup="GPIO4",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5}},
-	{.pGroup="GPIO4",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
+	{.pGroup="GPIO4",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,OF_LINE_3,OF_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}}, //P4.3 P4.4 UART2
 	{.pGroup="GPIO4",.pPart="D",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6}},
-};
-#else 
-#define  GROUP_SIZE		12
-static struct gpio_describe gpio_table[GROUP_SIZE]={
-	{.pGroup="GPIO0",.pPart="A",.pins={ON_LINE_0,ON_LINE_1}},
-
-	{.pGroup="GPIO1",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	{.pGroup="GPIO1",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	{.pGroup="GPIO1",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	{.pGroup="GPIO1",.pPart="D",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-
-	{.pGroup="GPIO2",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6}},
-
-	{.pGroup="GPIO3",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	{.pGroup="GPIO3",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	{.pGroup="GPIO3",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3}},
-
-
-	{.pGroup="GPIO4",.pPart="A",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	{.pGroup="GPIO4",.pPart="B",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	{.pGroup="GPIO4",.pPart="C",.pins={ON_LINE_0,ON_LINE_1,ON_LINE_2,ON_LINE_3,ON_LINE_4,ON_LINE_5,ON_LINE_6,ON_LINE_7}},
-	// {.pGroup="GPIO4",.pPart="D",.pins={ON_LINE_0}},
 };
 #endif 
 // int gpio_rockchip_set_mux(int bank, int pin, int mux);
