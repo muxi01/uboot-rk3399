@@ -384,7 +384,7 @@
 		"for target in ${boot_targets}; do "                      \
 			"run bootcmd_${target}; "                         \
 		"done\0" \
-	"log_addr_r=0x0a200000\0"\
+	"log_addr_r=0x0c200000\0"\
 	"log_size_r=0x100000\0" \
 	"do_fastboot=fastboot usb 0 ;booti ${kernel_addr_r} - ${fdt_addr_r}; \0"
 
