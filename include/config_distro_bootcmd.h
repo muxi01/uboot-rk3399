@@ -369,7 +369,7 @@
 	\
 	"scan_dev_for_boot_part="                                         \
 		"part list ${devtype} ${devnum} -bootable devplist; "     \
-		"env exists devplist || setenv devplist 1; "              \
+		"env exists devplist || setenv devplist 3; "              \
 		"for distro_bootpart in ${devplist}; do "                 \
 			"if fstype ${devtype} "                           \
 					"${devnum}:${distro_bootpart} "   \
@@ -384,12 +384,12 @@
 		"for target in ${boot_targets}; do "                      \
 			"run bootcmd_${target}; "                         \
 		"done\0" \
-	"log_addr_r=0x0a200000\0"\
+	"log_addr_r=0x0c200000\0"\
 	"log_size_r=0x100000\0" \
-	"do_fastboot=run load_images ;booti ${kernel_addr_r} - ${fdt_addr_r}; \0"
+	"do_fastboot=fastboot usb 0; booti ${kernel_addr_r} - ${fdt_addr_r}; \0"
 
 #ifndef CONFIG_BOOTCOMMAND
-#define CONFIG_BOOTCOMMAND "run distro_bootcmd"
+#define CONFIG_BOOTCOMMAND "run do_fastboot; run distro_bootcmd"
 #endif
 
 #endif  /* _CONFIG_CMD_DISTRO_BOOTCMD_H */

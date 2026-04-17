@@ -83,7 +83,7 @@ out:
 #define SAMPLE_TIME 		300
 #define SAMPLE_INTERVAL		10
 
-#if 0
+#if 1
 int rockchip_is_key_pressed(const char *gpio_name)
 {
 	int gpio_bank,gpio_pin;
@@ -103,12 +103,21 @@ int rockchip_is_key_pressed(const char *gpio_name)
 		}
 	}
 	printf("%s: press cnt:%d| release cnt:%d|\n",gpio_name,press_cnt,release_cnt);
+#if 0
+	//GPIO KEY 
 	if(release_cnt == 0)  {
 		return 1;
 	}
 	else if((press_cnt > release_cnt)  && ((press_cnt / release_cnt) > 3)) {
 		return 1;
 	}
+#else 
+	//IR PWM signal
+	int limit =(SAMPLE_TIME / SAMPLE_INTERVAL) / 4;
+	if((press_cnt > limit) && (release_cnt > limit)) {
+		return 1;
+	}
+#endif
 	return 0;
 }
 #else 
@@ -122,20 +131,16 @@ int rockchip_is_key_pressed(const char *gpio_name)
 
 int rk_board_download(void)
 {
-	if(rockchip_is_key_pressed("GPIO1_C7")) {
-		printf("go to fastboot mode\n");
-	//	env_set("preboot", "setenv preboot; fastboot usb 0");
-	//	run_command("fastboot usb 0", 0);
+	if(rockchip_is_key_pressed("GPIO3_D3")) {
+		printf("P3C2 is pressed, go to fastboot mode\n");
+		env_set("preboot", "setenv preboot; fastboot usb 0");
+		run_command("fastboot usb 0", 0);
 	}
-	if(rockchip_is_key_pressed("GPIO1_C2")) {
-		printf("go to download mode\n");
-	//	env_set("preboot", "setenv preboot; download");
-	}
-	if(rockchip_is_key_pressed("GPIO1_B0")) {
-		printf("go to maskrom mode\n");
-	//	writel(BOOT_BROM_DOWNLOAD, CONFIG_ROCKCHIP_BOOT_MODE_REG);
-	//	do_reset(NULL, 0, 0, NULL);
-	//	while(1);
+	if(rockchip_is_key_pressed("GPIO3_D4")) {
+		printf("P3C3 is pressed,go to maskrom mode\n");
+		writel(BOOT_BROM_DOWNLOAD, CONFIG_ROCKCHIP_BOOT_MODE_REG);
+		do_reset(NULL, 0, 0, NULL);
+		while(1);
 	}
 	return 0;
 }
@@ -144,7 +149,7 @@ EXPORT_SYMBOL(rk_board_download);
 
 int rk_board_late_init(void)
 {
-//	rk_board_download();
+	rk_board_download();
 	return 0;
 }
 

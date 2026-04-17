@@ -171,8 +171,7 @@
 #else
 
 #define RKIMG_BOOTCOMMAND			\
-	"run distro_bootcmd;" \
-	"run do_fastboot;" \
+	"run do_fastboot; run distro_bootcmd; run do_fastboot;" \
 	"boot_android ${devtype} ${devnum};"	\
 	"boot_fit;"				\
 	"bootrkp;"
